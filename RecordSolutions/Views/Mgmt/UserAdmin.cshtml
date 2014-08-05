@@ -1,0 +1,116 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<RecordSolutions.Models.UserProfile>
+
+@{
+    Layout = null;
+    ViewBag.Title = "User Administration";
+}
+<script>
+    var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+
+    $("th > a").each(clickAjaxOverride);
+    $("td > a").each(clickAjaxOverride);
+    $("a.btn").each(clickAjaxOverride);
+
+    var elm = "";
+    var oldFilter = "";
+    @{string filt = ViewBag.Filter;
+        switch (filt)
+        {
+            case "id":
+            default:
+                <text>
+                    elm = 'th > a:contains("User ID")';
+                    oldFilter = "id";
+                </text>
+                break;
+            case "user":
+                <text>
+                    elm = 'th > a:contains("User Name")';
+                    oldFilter = "user";
+                </text>
+                break;
+            case "numFiles":
+                <text>
+                    elm = 'th > a:contains("Files")';
+                    oldFilter = "numFiles";
+                </text>
+                break;
+            case "email":
+                <text>
+                    elm = 'th > a:contains("Email Address")';
+                    oldFilter = "email";
+                </text>
+                break;
+
+        }
+    }
+    var reverse = @{if (@ViewBag.Reverse)
+                    {
+            <text>true;</text>
+                    }
+                    else
+                    {
+            <text>false;</text>
+                    }
+    }
+    if(reverse){
+        $(elm).attr("class", $(elm).attr("class") == "open" ? "" : "open");
+    }
+    else{
+        $(elm).attr('href', $(elm).attr('href') + "&oldFilter=" + oldFilter);
+    };
+
+    $(elm).html('<span class="caret"></span> ' + $(elm).html());
+</script>
+
+<h2>User Administration <small>Currently Registered Users</small></h2>
+
+<table class="table detailTbl">
+    <thead>
+        <tr>
+            <th><a href="@Url.Action("UserAdmin", new { filter = RecordSolutions.ViewModels.ViewFilter.id })" class="open">User ID</a></th>
+            <th><a href="@Url.Action("UserAdmin", new { filter = RecordSolutions.ViewModels.ViewFilter.user })" class="open">User Name</a></th>
+            <th><a href="@Url.Action("UserAdmin", new { filter = RecordSolutions.ViewModels.ViewFilter.email })" class="open">Email Address</a></th>
+            <th><a href="@Url.Action("UserAdmin", new { filter = RecordSolutions.ViewModels.ViewFilter.numRecords })">Records</a></th>
+            <th></th>
+        </tr>
+        @foreach (RecordSolutions.Models.UserProfile user in Model)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>
+                    <a href="@Url.Action("UserDetail", new{ id = user.UserId })">
+                        <img src="@user.AvatarUrl" border=0 style="width:25px;height:25px;border-radius:14px;"/>
+                        @user.UserName
+                    </a>
+                </td>
+                <td><a href="mailto:@{@user.Email}">@user.Email</a></td>
+                <td>@user.Records.Count()</td>
+                <td>
+                    <div class="btn-group">
+                        <a href="@Url.Action("UserDetail", new { id = user.UserId })" class="btn btn-default">
+                            <span class="glyphicon glyphicon glyphicon-list-alt"></span>
+                            Details
+                        </a>
+                        <a href="@Url.Action("UserEdit", new { id = user.UserId })" class="btn btn-default">
+                            <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                            Edit
+                        </a>
+                        <a href="@Url.Action("UserDelete", new { id = user.UserId })" class="btn btn-default">
+                            <span class="glyphicon glyphicon glyphicon-remove"></span>
+                            Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </thead>
+</table>
+
+@Html.PagedListPager(Model, page => Url.Action("Records", new { page,
+        filter = Request.QueryString["filter"],
+        oldFilter = Request.QueryString["oldFilter"]}),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded })

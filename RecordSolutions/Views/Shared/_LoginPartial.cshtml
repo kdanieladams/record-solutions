@@ -1,0 +1,58 @@
+﻿<ul class="nav navbar-nav navbar-right">
+@if (Request.IsAuthenticated) {
+    <text>
+        <li>
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" })) {
+            @Html.AntiForgeryToken()
+            <div class="dropdown">
+                <a href="" data-toggle="dropdown" data-target="#">
+                  <span class="caret"></span>
+                  @User.Identity.Name <img src=@if(Model != null && 
+                                                (Model.GetType().Name == "ManageModel"
+                                                || Model.GetType().Name.Contains("UserProfile")))
+                                            {
+                                                <text>@Model.AvatarUrl</text>
+                                            }
+                                            else if (Model.GetType().Name == "IndexViewModel")
+                                            {
+                                                <text>@Model.UserAvatarUrl</text>
+                                            }
+                                            else 
+                                            {
+                                                <text>@ViewBag.UserAvatarUrl</text>
+                                            }/>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <a href="@Url.Action("Manage", "Account")">Manage Account
+                            <span class="glyphicon glyphicon-user"></span></a>
+                    </li>
+                    @if (User.IsInRole("Customer") || User.IsInRole("Administrator")) { 
+                        <li>
+                            <a href="@Url.Action("Records", "Account")">Avail. Records
+                                <span class="glyphicon glyphicon-list"></span>
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Administrator")) { 
+                        <li>
+                            <a href="@Url.Action("Index", "Mgmt", new { })">Mgmt
+                                <span class="glyphicon glyphicon-cog"></span></a>
+                        </li>
+                    }
+                    <li>
+                        <a href="javascript:document.getElementById('logoutForm').submit()">
+                            Log off <span class="glyphicon glyphicon-ban-circle"></span></a>
+                    </li>
+                </ul>
+            </div>
+            }
+        </li>
+        
+    </text>
+} else {
+    <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+    <li class="separator"></li>
+    <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+}
+</ul>

@@ -1,0 +1,119 @@
+﻿@model RecordSolutions.Models.Record
+
+@{
+    Layout = null;
+    ViewBag.Title = "Record Delete";
+}
+<style>
+    table.table tr td:first-child {
+        min-width: 25%;
+    }
+</style>
+
+<script>
+    var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+    $("a.btn-default").each(clickAjaxOverride);
+    $("#sidebar-nav > li[data-action='Records']").addClass('active');
+</script>
+
+<fieldset style="margin-top:25px">
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <legend>
+                        <a href="@Url.Action("Records")" class="btn btn-default pull-right">
+                            <span class="glyphicon glyphicon-backward"></span> 
+                            Back to Record Admin
+                        </a>
+                        <span class="glyphicon glyphicon-file" style="font-size: 56px;color: #1E619B;"></span> Record #@Model.RecordId
+                    </legend>
+                    <p class="error">@ViewBag.ErrorMessage</p>
+                    <h4 style="color:#f00;">Are you sure you want to delete this record <em>(cannot undo)</em>?</h4>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.FileUrls):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @foreach(RecordSolutions.Models.FileUrl url in Model.FileUrls)
+                        {
+                            <text>@url.Url <br /></text>
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.StartDate):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.StartDate)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.EndDate):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.EndDate)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ReferenceNumber):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ReferenceNumber)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.PermittedUsers):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @foreach (var user in Model.PermittedUsers)
+                        { 
+                            @user.UserName <text><br /></text>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</fieldset>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    <p>
+        <button type="submit" class="btn btn-danger">
+            <span class="glyphicon glyphicon glyphicon-remove"></span>
+            Delete This Record
+        </button>  
+    </p>
+}
+<a href="@Url.Action("Records")" class="btn btn-default pull-right">
+    <span class="glyphicon glyphicon-backward"></span> 
+    Back to Record Admin
+</a>

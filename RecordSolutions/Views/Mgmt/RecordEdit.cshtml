@@ -1,0 +1,140 @@
+﻿@model RecordSolutions.Models.Record
+
+@{
+    Layout = null;
+    ViewBag.Title = "Record Edit";
+}
+<script>
+    var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+    $(document).ready(function () {
+        DancalReady();
+
+        $("#sidebar-nav > li[data-action='Records']").addClass('active');
+        $('input').addClass('form-control');
+        $('select').addClass('form-control');
+        @if(Model.PermittedUsers != null)
+        {
+            foreach (var u in Model.PermittedUsers)
+            { 
+                <text>$("#PermittedUserIds > option[value=</text>@u.UserId<text>]").attr("selected", "selected");</text>
+            }
+        }
+
+        $("a.btn-default").each(clickAjaxOverride);
+
+        $("input[type='datetime']").click(function (e) {
+            CalendarPopup.click(e);
+        });
+        $("#calendarPopupDismiss").click(function () {
+            CalendarPopup.dismiss();
+        });
+    });
+</script>
+
+<div id="popup">
+    <a id="calendarPopupDismiss" style="float:right;cursor:pointer;margin-right:5px;">&times;</a>
+    <div id="calendarHeader"></div>
+    <div id="calendarContainer">
+        <div class="wk header">
+            <div class="day">Sun.</div>
+            <div class="day">Mon.</div>
+            <div class="day">Tue.</div>
+            <div class="day">Wed.</div>
+            <div class="day">Thu.</div>
+            <div class="day">Fri.</div>
+            <div class="day">Sat.</div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset style="margin-top:25px">
+        <legend>
+            <div class="btn-group pull-right">
+                <a href="@Url.Action("Records")" class="btn btn-default">
+                    <span class="glyphicon glyphicon-backward"></span> 
+                    Back to Record Admin
+                </a>
+                <a href="@Url.Action("RecordDetail", new { id = Model.RecordId })" class="btn btn-default">
+                    <span class="glyphicon glyphicon glyphicon-list-alt"></span>
+                    Details
+                </a>
+                <a href="@Url.Action("RecordDelete", new { id = Model.RecordId })" class="btn btn-default">
+                    <span class="glyphicon glyphicon glyphicon-remove"></span>
+                    Delete
+                </a>
+            </div>
+            <span class="glyphicon glyphicon-file" style="font-size: 56px;color: #1E619B;"></span> Record #@Model.RecordId
+        </legend>
+
+        @Html.HiddenFor(model => model.RecordId)
+        @Html.HiddenFor(model => model.FileUrls)
+        @Html.HiddenFor(model => model.ReferenceNumber)
+        @Html.HiddenFor(model => model.StartDate)
+
+        <div class="editor-label">
+            <b>@Html.DisplayNameFor(model => model.StartDate)</b>
+        </div>
+        <div class="editor-field">
+            @Model.StartDate.ToShortDateString()
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.EndDate)
+        </div>
+        <div class="editor-field">
+            <input id="EndDate" name="EndDate" type="datetime" value="@Model.EndDate.ToShortDateString()"/>
+            @Html.ValidationMessageFor(model => model.EndDate)
+        </div>
+
+        <div class="editor-label">
+            <label for="PermittedUserIds">Permitted Users</label>
+        </div>
+        <div class="editor-field">
+            @Html.ListBox("PermittedUserIds", new MultiSelectList(ViewBag.Users, "UserId", "UserName"), new {Multiple = "multiple"})
+        </div>
+        <div class="editor-label">
+            <b>@Html.DisplayNameFor(model => model.FileUrls)</b>
+        </div>
+        <div class="editor-field">
+            @foreach(RecordSolutions.Models.FileUrl url in Model.FileUrls)
+            {
+                <text>@url.Url <br /></text>
+            }
+        </div>
+
+        <div class="editor-label">
+            <b>@Html.DisplayNameFor(model => model.ReferenceNumber)</b>
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.ReferenceNumber)
+        </div>
+        <br />
+        <p>
+            <button type="submit" class="btn btn-success">
+                <span class="glyphicon glyphicon-check"></span>
+                Save Changes
+            </button>
+        </p>
+    </fieldset>
+}
+<div class="btn-group pull-right">
+    <a href="@Url.Action("Records")" class="btn btn-default">
+        <span class="glyphicon glyphicon-backward"></span> 
+        Back to Record Admin
+    </a>
+    <a href="@Url.Action("RecordDetail", new { id = Model.RecordId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-list-alt"></span>
+        Details
+    </a>
+    <a href="@Url.Action("RecordDelete", new { id = Model.RecordId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-remove"></span>
+        Delete
+    </a>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

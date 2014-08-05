@@ -1,0 +1,106 @@
+﻿@model RecordSolutions.Models.UserProfile
+
+@{
+    Layout = null;
+    ViewBag.Title = "UserDelete";
+}
+
+<style>
+    table.table tr td:first-child {
+        min-width: 25%;
+    }
+</style>
+
+<script>
+    var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+    $("a.btn-default").each(clickAjaxOverride);
+    $("#sidebar-nav > li").removeClass("active");
+    $("#sidebar-nav > li[data-action='Users']").addClass('active');
+</script>
+
+<fieldset class="fsDetail">
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <legend>
+                        <a href="@Url.Action("UserAdmin")" class="btn btn-default pull-right">
+                            <span class="glyphicon glyphicon-backward"></span> 
+                            Back to User Admin
+                        </a>
+                        <img src="@Model.AvatarUrl" style="width:150px;height:150px;border-radius:100px;" /> @Model.UserName
+                    </legend>
+                    <p class="error">@ViewBag.ErrorMessage</p>
+                    <h4 style="color:#f00;">Are you sure you want to delete this user <em>(cannot undo)</em>?</h4>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.UserName)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.UserName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.Email)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Email)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Registration Date
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @ViewBag.RegistrationDate.ToShortDateString()
+                        @ViewBag.RegistrationDate.ToShortTimeString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.LastLoginDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @ViewBag.LastLoginDate.ToShortDateString()
+                        @ViewBag.LastLoginDate.ToShortTimeString()
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>      
+</fieldset>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    <p>
+        <button type="submit" class="btn btn-danger">
+            <span class="glyphicon glyphicon glyphicon-remove"></span>
+            Delete This User
+        </button>  
+    </p>
+}
+
+<a href="@Url.Action("UserAdmin")" class="btn btn-default pull-right">
+    <span class="glyphicon glyphicon-backward"></span> 
+    Back to User Admin
+</a>

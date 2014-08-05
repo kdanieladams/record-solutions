@@ -1,0 +1,71 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Record Solutions L.L.C.</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href='http://fonts.googleapis.com/css?family=Stint+Ultra+Condensed|Open+Sans+Light' rel='stylesheet' type='text/css'>
+    @Styles.Render("~/Content/styles.css")
+    
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/Scripts/jquery-1.10.2.min.js")
+    @Scripts.Render("~/Scripts/bootstrap.min.js")
+
+    <script>
+        var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+
+        $(document).ready(function(){
+            $('ul.navbar-left > li > a, ul.navbar-right > li > a').each(function(){
+                var href = $(this).attr('href');
+                if(href.search(action) > 1)
+                {
+                    $(this).addClass('active');
+                }
+                else if (action == "Index" && href == "/")
+                {
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Begin navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <ul class="nav navbar-nav navbar-left">
+                <li><div class="navLogo"></div></li>
+                <li class="separator"></li>
+                <li><a href="@Url.Action("Index", "Home")">Home</a></li>
+                <li class="separator"></li>
+                <li><a href="@Url.Action("Services", "Home")">Services</a></li>
+                <li class="separator"></li>
+                <li><a href="@Url.Action("Pricing", "Home")">Pricing</a></li>
+                <li class="separator"></li>
+                <li><a href="@Url.Action("About", "Home")">About</a></li>
+                <li class="separator"></li>
+                <li><a href="@Url.Action("Contact", "Home")">Contact</a></li>
+            </ul>
+            
+            @Html.Partial("_LoginPartial")
+        </div>
+    </div>
+
+    @RenderSection("headerLogo", required: false)
+
+    <!-- Begin page -->
+    <div class="container pageContainer" style="height: 100%;">
+
+        @RenderBody()
+
+        <!-- Footer -->
+        <div class="row">
+            <div class="col-xs-12 footer">
+            This is the footer. &copy; 2014 Dan Adams Inc.
+            </div>
+        </div>
+    </div>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

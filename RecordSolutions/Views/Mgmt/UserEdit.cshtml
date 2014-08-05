@@ -1,0 +1,160 @@
+﻿@model RecordSolutions.Models.UserProfile
+
+@{
+    Layout = null;
+    ViewBag.Title = "UserEdit";
+}
+
+<style>
+    fieldset label.mainLbl {
+        font-weight: bold;
+    }
+    fieldset label.subLbl{
+        margin-right: 10px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $("a.btn").each(clickAjaxOverride);
+        $("#sidebar-nav > li").removeClass("active");
+        $("#sidebar-nav > li[data-action='Users']").addClass('active');
+        $('input[type!=checkbox]').addClass('form-control');
+
+        // Selection string to find the checkbox we want to track
+        var elm = "#Gravatar";
+
+        // checkCheckBox()
+        // --
+        // Function to check whether or not the Gravatar checkbox
+        // is checked, and make appropriate changes to this page
+        var checkCheckBox = function () {
+            if ($(elm).prop("checked")) {
+                $("#uploadAv").prop("disabled", true);
+                $("label[for=uploadAv]").css("color", "#999");
+            }
+            else {
+                $("#uploadAv").prop("disabled", false);
+                $("label[for=uploadAv]").css("color", "#000");
+            };
+        };
+            
+        // Initial check in case default value is true
+        checkCheckBox();
+
+        // Setup onChange event handler for checkbox
+        $(elm).change(function () {
+            checkCheckBox();
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset class="fsDetail">
+        <legend>
+            <div class="btn-group pull-right">
+                <a href="@Url.Action("UserAdmin")" class="btn btn-default">
+                    <span class="glyphicon glyphicon-backward"></span> 
+                    Back to User Admin
+                </a>
+                <a href="@Url.Action("UserDetail", new { id = Model.UserId })" class="btn btn-default">
+                    <span class="glyphicon glyphicon glyphicon-list-alt"></span>
+                    Detail
+                </a>
+                <a href="@Url.Action("UserDelete", new { id = Model.UserId })" class="btn btn-default">
+                    <span class="glyphicon glyphicon glyphicon-remove"></span>
+                    Delete
+                </a>
+            </div>
+            <img src="@Model.AvatarUrl" style="width:150px;height:150px;border-radius:100px;" /> @Model.UserName
+        </legend>
+
+        @Html.HiddenFor(model => model.UserId)
+        @Html.HiddenFor(model => model.UserName)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Email)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Email)
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(m => m.AvatarUrl, new { @class = "mainLbl" })
+        </div>
+        <div class="editor-field">
+            <div class="well">
+                <label for="uploadAv" class="subLbl" style="padding-top:11px;">
+                    Choose an image to upload <small><em>(200px by 200px, any common image format)</em></small>:
+                </label>
+                <input id="uploadAv" name="uploadAv" type="file" accept="image/gif, image/jpeg, image/png" />
+                <br />
+                <label for="Gravatar" class="subLbl">
+                    <b>OR</b>: Use a <a href="http://www.gravatar.com" target="_blank"><em>Gravatar</em></a> 
+                    derived from the user's email address:
+                </label>
+                @if(Model.AvatarUrl != null && Model.AvatarUrl.Contains("gravatar.com"))
+                {
+                    @Html.CheckBox("Gravatar", true, new { id = "Gravatar" })
+                }
+                else
+                {
+                    @Html.CheckBox("Gravatar", false, new { id = "Gravatar" })
+                }
+            </div>
+        </div>
+
+        <br />
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Records)
+        </div>
+        <div class="editor-field">
+            <ul>
+                @foreach (RecordSolutions.Models.Record record in ViewBag.Records)
+                {
+                    <li>
+                        @if (record.PermittedUsers.Count() > 0 && record.PermittedUsers.Contains(Model))
+                        { 
+                            <input type="checkbox" name="recordIds" value="@record.RecordId" checked /> 
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="recordIds" value="@record.RecordId" /> 
+                        }
+                        Record #@record.RecordId - @record.ReferenceNumber
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <p>
+            <button type="submit" class="btn btn-success">
+                <span class="glyphicon glyphicon-check"></span>
+                Update User Profile
+            </button>
+        </p>
+    </fieldset>
+}
+
+<div class="btn-group pull-right">
+    <a href="@Url.Action("UserAdmin")" class="btn btn-default">
+        <span class="glyphicon glyphicon-backward"></span> 
+        Back to User Admin
+    </a>
+    <a href="@Url.Action("UserDetail", new { id = Model.UserId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-list-alt"></span>
+        Detail
+    </a>
+    <a href="@Url.Action("UserDelete", new { id = Model.UserId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-remove"></span>
+        Delete
+    </a>
+</div>
+
+@Scripts.Render("~/bundles/jqueryval")

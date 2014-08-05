@@ -1,0 +1,50 @@
+﻿@model RecordSolutions.Models.GeneralSettings
+@{
+    Layout = null;
+    ViewBag.Title = "General Settings";
+}
+
+<h2>General Settings</h2>
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <div class="editor-label">
+            @Html.LabelFor(m => m.DefaultAvatarUrl)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(m => m.DefaultAvatarUrl, new { @class = "form-control" })
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(m => m.GravatarUrl)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(m => m.GravatarUrl, new { @class = "form-control" })
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(m => m.AllowedImageTypes)
+            <small><em>Comma separated</em></small>
+        </div>
+        <div class="editor-field">
+            @{
+                string inputValue = String.Empty;
+                foreach(var ext in Model.AllowedImageTypes)
+                {
+                    if(ext != Model.AllowedImageTypes[Model.AllowedImageTypes.Count() - 1])
+                        { inputValue += String.Format("{0},", ext); }
+                    else
+                        { inputValue += String.Format("{0}", ext); }
+                }   
+                <input type="text" class="form-control" name="AllowedImageTypes" value="@inputValue" />
+            }
+        </div>
+    </fieldset>
+    
+    <button type="submit" class="btn btn-success">
+        <span class="glyphicon glyphicon-save"></span>
+        Save Settings
+    </button>
+}

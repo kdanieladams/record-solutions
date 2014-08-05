@@ -1,0 +1,204 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<RecordSolutions.Models.Message>
+
+@{
+    Layout = null;
+    ViewBag.BreadCrumbs = "Bob";
+}
+<style>
+    .cat-bullet {
+        display:inline-block;
+        width:10px;
+        height:10px;
+        border:solid 1px #aaa;
+        border-radius: 5px;
+    }
+    a {
+        cursor: pointer;
+    }
+</style>
+<script>
+    var colorStandard = "text-primary";
+    var colorSuccess = "text-success";
+    var colorWarning = "text-warning";
+    var colorDanger = "text-danger";
+
+    var msgModal = function (id) {
+        $.ajax({
+            url: "/Mgmt/MessageDetail",
+            type: "GET",
+            data: "msgId=" + id,
+            success: function (data) {
+                var elmTitle = "h4.modal-title";
+                var elmBody = "div.modal-body";
+                var msg = "";
+                var date = new Date(parseInt(data["Date"].replace("/Date(", "").replace(")/", ""), 10));
+                var catColor = data["CategoryId"] == 4 ? colorDanger :
+                    data["CategoryId"] == 3 ? colorWarning :
+                    data["CategoryId"] == 2 ? colorSuccess :
+                    data["CategoryId"] == 1 ? colorStandard : standard;
+
+                msg += "<p><b>Category:</b> <span class='" + catColor + "'>" + data["Category"]["Name"] + "</span><br>";
+                msg += "<b>User performing action:</b> " + data["User"]["UserName"] + "</p>";
+                msg += data["Body"];
+
+                $(elmTitle).html(data["Title"] + "<br/><small>" + date.toDateString() + "</small>");
+                $(elmBody).html(msg);
+                $(elmBody + " > a").click(function (e) {
+                    var href = $(this).attr('href');
+                    e.preventDefault();
+                    $('div.modal').modal('hide');
+                    $('div.modal').on('hidden.bs.modal', function () {
+                        $("#sidebar-nav > li[data-action='Messages']").removeClass('active');
+                        $.ajax({
+                            url: href,
+                            type: 'GET',
+                            success: function (data) {
+                                $(ajaxStuff.body).html(data);
+                            }
+                        });
+                    });
+                });
+                $('div.modal').modal('show');
+            }
+        });
+    };
+
+    $(document).ready(function () {
+        var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+
+        $("th > a, ul.pagination > li > a").each(clickAjaxOverride);
+
+        var elm = "";
+        var oldFilter = "";
+        @{string filt = ViewBag.Filter;
+            switch (filt)
+            {
+                case "category":
+                    <text>
+        elm = 'th > a:contains("Category")';
+        oldFilter = "category";
+        </text>
+                    break;
+                case "user":
+                    <text>
+        elm = 'th > a:contains("User")';
+        oldFilter = "user";
+        </text>
+                    break;
+                case "title":
+                    <text>
+        elm = 'th > a:contains("Title")';
+        oldFilter = "title";
+        </text>
+                    break;
+                case "date":
+                default:
+                    <text>
+        elm = 'th > a:contains("Date")';
+        oldFilter = "date";
+        </text>
+                    break;
+            }
+        }
+        var reverse = @{if(@ViewBag.Reverse)
+            {
+                <text>true;</text>
+            }
+            else
+            {
+                <text>false;</text>
+            }
+        }
+        if (reverse) {
+            $(elm).attr("class", $(elm).attr("class") == "open" ? "" : "open");
+        }
+        else {
+            $(elm).attr('href', $(elm).attr('href') + "&oldFilter=" + oldFilter);
+        };
+
+        $(elm).html('<span class="caret"></span> ' + $(elm).html());
+    });
+</script>
+<h2>Messages <small>System message log</small></h2>
+<table id="msgTbl" class="table table-hover">
+    <thead>
+        <tr>
+            <th><a href="@Url.Action("Messages", new { filter = RecordSolutions.ViewModels.ViewFilter.category })" class="open">Category</a></th>
+            <th><a href="@Url.Action("Messages", new { filter = RecordSolutions.ViewModels.ViewFilter.title })" class="open">Title</a></th>
+            <th><a href="@Url.Action("Messages", new { filter = RecordSolutions.ViewModels.ViewFilter.user })" class="open">User</a></th>
+            <th><a href="@Url.Action("Messages", new { filter = RecordSolutions.ViewModels.ViewFilter.date })">Date</a></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (RecordSolutions.Models.Message msg in Model)
+    {
+        <tr class="@msg.Category.Name">
+            <td>
+                <div class="cat-bullet" style="background-color: @msg.Category.Color;"></div>
+                @msg.Category.Name
+            </td>
+            <td><a onclick="msgModal(@msg.MessageId)">@msg.Title</a></td>
+            <td>@msg.User.UserName</td>
+            <td>@msg.Date</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@Html.PagedListPager(Model, page => Url.Action("Messages", new { page,
+        filter = Request.QueryString["filter"],
+        oldFilter = Request.QueryString["oldFilter"]}),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded })
+
+<p class="text-center" style="font-size:12px; margin:0px;">Showing @Model.FirstItemOnPage - @Model.LastItemOnPage</p>
+
+<h3>Notes</h3>
+<div class="row">
+    <div class="col-sm-6">
+        <p>This is the Messages function...haven't quite finished it yet.</p>
+        <p>Eventually this will be a portal to a messaging system within <em>Record Solutions</em>.  The system
+            will facilitate the following advantages:
+            <ul>
+                <li>
+                    A way to receive system messages to notify and track system events.
+                </li>
+                <li>
+                    A way for users to provide feedback on files through comments.
+                </li>
+                <li style="text-decoration: line-through;">
+                    A way for users to communicate with one another, or perhaps just to allow
+                    administrators to communicate with users.
+                </li>
+            </ul>
+        </p>
+    </div>
+    <div class="col-sm-6">
+        <p>
+            I'm thinking I need to find a better way to do private messaging.  Users should not be able to create
+            system messages, which is really what this function is designed to facilitate.
+        </p>
+        <p>
+            Ultimately, this page will serve as a log of the past 25 (or however I choose I limit the number) system
+            messages.  If we need more detailed information than that, we should be able to get it from the database,
+            as every message will be stored there.
+        </p>
+    </div>
+</div>
+
+<div class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

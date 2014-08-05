@@ -1,0 +1,124 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<RecordSolutions.Models.Record>
+
+@{
+    Layout = null;
+}
+<script>
+    var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+    var elm = "";
+    var oldFilter = "";
+
+    $("#sidebar-nav > li[data-action='Records']").addClass('active');
+    $("th > a, td > a, a.btn, ul.pagination > li > a").each(clickAjaxOverride);
+
+    @{string filt = ViewBag.Filter;
+        switch (filt)
+        {
+            case "id":
+            default:
+                <text>
+    elm = 'th > a:contains("Record ID")';
+    oldFilter = "id";
+                </text>
+                break;
+            case "refNum":
+                <text>
+    elm = 'th > a:contains("Reference Number")';
+    oldFilter = "refNum";
+                </text>
+                break;
+            case "startDate":
+                <text>
+    elm = 'th > a:contains("Start Date")';
+    oldFilter = "startDate";
+                </text>
+                break;
+            case "endDate":
+                <text>
+    elm = 'th > a:contains("End Date")';
+    oldFilter = "endDate";
+                </text>
+                break;
+            case "numUsers":
+                <text>
+    elm = 'th > a:contains("Users")';
+    oldFilter = "numUsers";
+                </text>
+                break;
+        }
+    }
+    var reverse = @{if (@ViewBag.Reverse)
+                    {
+            <text>true;</text>
+                    }
+                    else
+                    {
+            <text>false;</text>
+                    }
+    }
+    if (reverse) {
+        $(elm).attr("class", $(elm).attr("class") == "open" ? "" : "open");
+    }
+    else {
+        $(elm).attr('href', $(elm).attr('href') + "&oldFilter=" + oldFilter);
+    };
+
+    $(elm).html('<span class="caret"></span> ' + $(elm).html());
+</script>
+<h2>Record Administration</h2>
+<p>
+    <a href="@Url.Action("RecordCreate")" class="btn btn-success">
+        <span class="glyphicon glyphicon-upload"></span>
+        Create New Record
+    </a>
+</p>
+<table class="table detailTbl">
+    <thead>
+        <tr>
+            <th><a href="@Url.Action("Records", new { filter = RecordSolutions.ViewModels.ViewFilter.id })" class="open">Record ID</a></th>
+            <th><a href="@Url.Action("Records", new { filter = RecordSolutions.ViewModels.ViewFilter.refNum })" class="open">Reference Number</a></th>
+            <th><a href="@Url.Action("Records", new { filter = RecordSolutions.ViewModels.ViewFilter.startDate })">Start Date</a></th>
+            <th><a href="@Url.Action("Records", new { filter = RecordSolutions.ViewModels.ViewFilter.endDate })">End Date</a></th>
+            <th><a href="#">Files</a></th>
+            <th><a href="@Url.Action("Records", new { filter = RecordSolutions.ViewModels.ViewFilter.numUsers })">Users</a></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (RecordSolutions.Models.Record record in Model)
+    { 
+        <tr>
+            <td>@record.RecordId</td>
+            <td><a href="@Url.Action("RecordDetail", new { id = record.RecordId })">@record.ReferenceNumber</a></td>
+            <td>@record.StartDate.ToShortDateString()</td>
+            <td>@record.EndDate.ToShortDateString()</td>
+            <td>@record.FileUrls.Count()</td>
+            <td>@record.PermittedUsers.Count()</td>
+            <td>
+                <div class="btn-group">
+                    <a href="@Url.Action("RecordDetail", new { id = record.RecordId })" class="btn btn-default">
+                        <span class="glyphicon glyphicon glyphicon-list-alt"></span>
+                        Details
+                    </a>
+                    <a href="@Url.Action("RecordEdit", new { id = record.RecordId })" class="btn btn-default">
+                        <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                        Edit
+                    </a>
+                    <a href="@Url.Action("RecordDelete", new { id = record.RecordId })" class="btn btn-default">
+                        <span class="glyphicon glyphicon glyphicon-remove"></span>
+                        Delete
+                    </a>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@Html.PagedListPager(Model, page => Url.Action("Records", new { page,
+        filter = Request.QueryString["filter"],
+        oldFilter = Request.QueryString["oldFilter"]}),
+    new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded })

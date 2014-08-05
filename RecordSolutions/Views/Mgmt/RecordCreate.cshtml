@@ -1,0 +1,106 @@
+﻿@model RecordSolutions.Models.Record
+
+@{
+    Layout = null;
+    ViewBag.Title = "Record create";
+}
+<script src="/Scripts/danmultifile.js"></script>
+<script>
+    $(document).ready(function () {
+        var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+        DancalReady();
+
+        $("a.btn-success").each(clickAjaxOverride);
+        $("a.btn-default").each(clickAjaxOverride);
+        $("#sidebar-nav > li[data-action='Records']").addClass('active');
+        $('input').addClass('form-control');
+        $('select').addClass('form-control');
+
+        $("input[type='datetime']").click(function (e) {
+            CalendarPopup.click(e);
+        });
+        $("#calendarPopupDismiss").click(function () {
+            CalendarPopup.dismiss();
+        });
+    });
+</script>
+
+<div id="popup">
+    <a id="calendarPopupDismiss" style="float:right;cursor:pointer;margin-right:5px;">&times;</a>
+    <div id="calendarHeader"></div>
+    <div id="calendarContainer">
+        <div class="wk header">
+            <div class="day">Sun.</div>
+            <div class="day">Mon.</div>
+            <div class="day">Tue.</div>
+            <div class="day">Wed.</div>
+            <div class="day">Thu.</div>
+            <div class="day">Fri.</div>
+            <div class="day">Sat.</div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("RecordCreate", "Mgmt", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset style="margin-top:25px">
+        <legend>
+            <a href="@Url.Action("Records")" class="btn btn-default pull-right">
+                <span class="glyphicon glyphicon-backward"></span> 
+                Back to Record Admin
+            </a>
+            <span class="glyphicon glyphicon-file" style="font-size: 56px;color: #1E619B;"></span> New Record
+        </legend>
+
+        <div class="editor-label">
+            <label for="uploadFile">Choose the file to upload <i>(only *.pdf files allowed)</i></label>
+        </div>
+        <div class="editor-field" id="uploadFileField">
+            <button type="button" class="btn btn-primary" onclick="addFileInputBtn()" id="addFileBtn">
+                <span class="glyphicon glyphicon-plus"></span>
+                Add Another File..
+            </button>
+            <br />
+            <input name="uploadFile0" id="newFile0" class="form-control" type="file" />
+        </div>
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.StartDate)
+        </div>
+        <div class="editor-field">
+            @DateTime.Now.ToShortDateString()
+        </div>
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.EndDate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.EndDate)
+            @Html.ValidationMessageFor(model => model.EndDate)
+        </div>
+
+        <div class="editor-label">
+            <label for="PermittedUserIds">Permitted Users</label>
+        </div>
+        <div class="editor-field">
+            @Html.ListBox("PermittedUserIds", new MultiSelectList(ViewBag.Users, "UserId", "UserName"), new { Multiple = "multiple" })
+        </div>
+
+        <br />
+
+        <button type="submit" class="btn btn-success">
+            <span class="glyphicon glyphicon-upload"></span>
+            Create Record
+        </button>
+    </fieldset>
+}
+<a href="@Url.Action("Records")" class="btn btn-default pull-right">
+    <span class="glyphicon glyphicon-backward"></span> 
+    Back to Record Admin
+</a>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

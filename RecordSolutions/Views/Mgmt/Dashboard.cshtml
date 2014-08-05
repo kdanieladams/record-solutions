@@ -1,0 +1,240 @@
+﻿@model RecordSolutions.ViewModels.MgmtIndexViewModel
+@{
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+
+        // Setup APPTS[] for Dancal
+        APPTS = [
+            @*@{
+                var lastRec = Model.Records.Last();
+                foreach (var rec in Model.Records)
+                {
+                    if (rec != lastRec)
+                    {
+                        <text>
+                        {title: "@rec.ReferenceNumber",
+                            desc: "n/a",
+                            startDate: new Date(@{@rec.StartDate.Year}, (@{@rec.StartDate.Month} - 1), @{@rec.StartDate.Day}),
+                            endDate: new Date(@{@rec.EndDate.Year}, (@{@rec.StartDate.Month} - 1), @{@rec.EndDate.Day}),
+                            url: "/Mgmt/RecordDetail/" + @rec.RecordId
+                        },
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                        {title: "@rec.ReferenceNumber",
+                            desc: "n/a",
+                            startDate: new Date(@{@rec.StartDate.Year}, (@{@rec.EndDate.Month} - 1), @{@rec.StartDate.Day}),
+                            endDate: new Date(@{@rec.EndDate.Year}, (@{@rec.EndDate.Month} - 1), @{@rec.EndDate.Day}),
+                            url: "/Mgmt/RecordDetail/" + @rec.RecordId
+                            }
+                        </text>
+                    }
+                }
+            }*@
+        ];
+
+        // Initialize calendar
+        DancalReady();
+
+        // Assign CSS classes to messages
+        var catCssClass;
+        var glyph;
+        @{
+            int index = 0;
+            foreach (var msg in Model.Messages)
+            {
+                if (msg.Category.Name != "Comment")
+                {
+                    string cat = msg.Category.Name;
+                    switch (cat)
+                    {
+                        case "Success":
+                            <text>catCssClass = "panel-success";</text>
+                            <text>glyph = "glyphicon-saved";</text>
+                            break;
+                        case "Warning":
+                            <text>catCssClass = "panel-warning";</text>
+                            <text>glyph = "glyphicon-asterisk";</text>
+                            break;
+                        case "Danger":
+                            <text>catCssClass = "panel-danger";</text>
+                            <text>glyph = "glyphicon-ban-circle";</text>
+                            break;
+                        case "Standard":
+                            <text>catCssClass = "panel-info";</text>        
+                            <text>glyph = "glyphicon-list-alt";</text>
+                            break;
+                        default:
+                            <text>catCssClass = "";</text>        
+                            <text>glyph = "glyphicon-list-alt";</text>    
+                            break;
+                    }
+                    <text>$('#msg-@index > .panel-heading > .panel-title > span').addClass(glyph);</text>
+                    <text>$('#msg-@index').addClass(catCssClass);</text>
+                    index++;
+                }
+            }
+        }
+        
+        // Flot initialization
+        @{
+            DateTime today = DateTime.Today;
+            
+            <text>var d1 = [];</text>
+            for (int i = 30; i > 0; i--)
+            {
+                DateTime date = today.AddDays(-i);
+                <text>d1.push([new Date('@date.ToShortDateString()'), ( -2*@i + 1050 - ( @i * @i ) )])</text>
+            }
+        }
+        
+
+        $.plot("#placeholder", [
+          { label: "Disk Usage (MB)", data: d1 }
+        ], {
+            series: {
+                lines: { show: true },
+                points: { show: false }
+            },
+            xaxis: {
+                mode: "time",
+                ticks: 9
+            },
+            yaxis: {
+                ticks: 10,
+                tickDecimals: 1
+            },
+            grid: {
+                backgroundColor: { colors: ["#fff", "#eee"] },
+                borderWidth: {
+                    top: 1,
+                    right: 1,
+                    bottom: 2,
+                    left: 2
+                }
+            }
+        });
+    });
+
+    // =================
+    // finishedLoading()
+    // =================
+    // Helper function to make some changes at the end of page load, whether it's
+    // an AJAX call or not.
+    var finishedLoading = function() {
+        // Place ellipsis on long APPT titles
+        $('.appt').ellipsis();
+
+        // Setup AJAX click handlers
+        $("div.panel a, a.appt").each(clickAjaxOverride);
+    }
+    // Assign the function to the ajaxStop event
+    $(document).ajaxStop(finishedLoading);
+</script>
+<div class="row" id="tripheader">
+    <div class="col-sm-3">
+        <p class="icon icon-person"><span class="glyphicon glyphicon-user"></span></p>
+        <h2>        
+            @Model.NumUsers<br><small>New Users</small>
+        </h2>
+    </div>
+    <div class="col-sm-3">
+        <h2>
+        <div class="icon icon-mail"><span class="glyphicon glyphicon-envelope"></span></div>
+        @Model.NumMessages<br><small>New Messages</small>
+        </h2>
+    </div>
+    <div class="col-sm-3">
+        <h2>
+        <div class="icon icon-files"><span class="glyphicon glyphicon-file"></span></div>
+        @Model.NumRecords<br><small>Accessible Records</small>
+        </h2>
+    </div>
+    <div class="col-sm-3">
+        <h2>
+        <div class="icon icon-online"><span class="glyphicon glyphicon-globe"></span></div>
+        @Model.NumUsersOnline<br><small>Users Online</small>
+        </h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-9">
+        <div class="row">
+        <div class="col-md-8">
+            <h3>Record Schedule</h3>
+            <div class="border">
+                <div id="calendarHeader">
+                    <p>Enter <i>Record Admin</i> to add records to the calendar for temporally controlled records distribution.</p>
+                </div>
+                <div id="calendarContainer">
+                    <div class="wk header">
+                        <div class="day">Sun.</div>
+                        <div class="day">Mon.</div>
+                        <div class="day">Tue.</div>
+                        <div class="day">Wed.</div>
+                        <div class="day">Thu.</div>
+                        <div class="day">Fri.</div>
+                        <div class="day">Sat.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h3>Recent Comments</h3>
+            @foreach (var cmt in Model.Comments)
+            { 
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span> @cmt.Title</h3>
+                </div>
+                @if (cmt.Body.Length > 1)
+                {
+                    <div class="panel-body">@Html.Raw(cmt.Body)</div>
+                }
+                <div class="panel-footer">
+                    <p>
+                        <small>@cmt.Date.ToShortDateString() @cmt.Date.ToShortTimeString()</small><br />
+                        <a href="@Url.Action("UserDetail", new { id = cmt.UserId })"><em>@cmt.User.UserName</em></a> on
+                        <a href="@Url.Action("RecordDetail", new { id = cmt.RecordId })">Record #@cmt.RecordId</a>
+                    </p>
+                </div>
+            </div>
+            }
+        </div>
+        </div>
+        <div class="col-md-12">
+            <h3>Historical Data</h3>
+            <div id="placeholder"></div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <h3>System Messages</h3>
+        @{
+            int j = 0;
+            foreach (var msg in Model.Messages)
+            {
+                <div class="panel" id="msg-@j">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="glyphicon"></span> @msg.Title</h3>
+                    </div>
+                    @if (msg.Body.Length > 1)
+                    {
+                        <div class="panel-body">@Html.Raw(msg.Body)</div>
+                    }
+                    <div class="panel-footer">
+                        <p>
+                            <small>@msg.Date.ToShortDateString() @msg.Date.ToShortTimeString()</small><br />
+                            <a href="@Url.Action("UserDetail", new { id = msg.User.UserId })"><em>@msg.User.UserName</em></a> 
+                        </p>
+                    </div>
+                </div>
+                    j++;
+            }
+        }
+    </div>
+</div>

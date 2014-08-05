@@ -1,0 +1,63 @@
+﻿@model RecordSolutions.Models.UserProfile
+
+@{
+    ViewBag.Title = "Records";
+}
+
+<h2>Records</h2>
+
+<p>Welcome, @User.Identity.Name! You have @Model.Records.Count available records!</p>  
+
+<p>Feel free to leave a comment about your experience with us.  We love to hear good things!  
+    Also, if you run into some trouble with a particular record, a comment is a good way to bring 
+    it up to let us know.
+</p>
+
+<table class="table table-striped detailTbl">
+    <thead>
+        <tr>
+            <th>Reference Number</th>
+            <th>Release Date</th>
+            <th>Expiration Date</th>
+            <th>Comments</th>
+            <th>Files</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Records.Count > 0)
+    {
+        foreach (var record in Model.Records)
+        { 
+            <tr>
+                <td>
+                    <a href="@Url.Action("RecordDetail", new { id = record.RecordId })">
+                        <span class="glyphicon glyphicon-file"></span>
+                        @record.ReferenceNumber</a>
+                </td>
+                <td>
+                    @record.StartDate.ToShortDateString()
+                </td>
+                <td>
+                    @record.EndDate.ToShortDateString()
+                </td>
+                <td>
+                    @record.Comments.Count()
+                </td>
+                <td>
+                    @foreach (RecordSolutions.Models.FileUrl url in record.FileUrls)
+                    {
+                        <text><a href="@Url.Action("RecordDownload", new { id = record.RecordId, url = url.Url })">
+                            @url.Url</a> <br /></text>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="4"><em>Sorry, you're not currently permitted to view any records.</em></td>
+        </tr>
+    }
+    </tbody>    
+</table>

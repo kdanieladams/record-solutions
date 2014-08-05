@@ -1,0 +1,151 @@
+﻿@model RecordSolutions.Models.UserProfile
+
+@{
+    Layout = null;
+    ViewBag.Title = "UserDetail";
+}
+  
+<script>
+    $(document).ready(function () {
+        var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+        $("th a").each(clickAjaxOverride);
+        $("td a").each(clickAjaxOverride);
+        $("a.btn").each(clickAjaxOverride);
+        $("#sidebar-nav > li").removeClass("active");
+        $("#sidebar-nav > li[data-action='Users']").addClass('active');
+    });
+</script>
+
+<fieldset class="fsDetail">
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <legend>
+                        <div class="btn-group pull-right">
+                            <a href="@Url.Action("UserAdmin")" class="btn btn-default">
+                                <span class="glyphicon glyphicon-backward"></span> 
+                                Back to User Admin
+                            </a>
+                            <a href="@Url.Action("UserEdit", new { id = Model.UserId })" class="btn btn-default">
+                                <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                                Edit
+                            </a>
+                            <a href="@Url.Action("UserDelete", new { id = Model.UserId })" class="btn btn-default">
+                                <span class="glyphicon glyphicon glyphicon-remove"></span>
+                                Delete
+                            </a>
+                        </div>
+                        <img src="@Model.AvatarUrl" style="width:150px;height:150px;border-radius:100px;" /> @Model.UserName
+                    </legend>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.UserName)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.UserName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                         @Html.DisplayNameFor(model => model.Email)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.Email)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        Registration Date
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @ViewBag.RegistrationDate.ToShortDateString()
+                        @ViewBag.RegistrationDate.ToShortTimeString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.LastLoginDate)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @ViewBag.LastLoginDate.ToShortDateString()
+                        @ViewBag.LastLoginDate.ToShortTimeString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(u => u.Records)
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        <ul class="userFiles">
+                            @if (Model.Records.Count() == 0)
+                            { 
+                                <li><em>This user is not permitted to download any specific files.</em></li>
+                            }
+                            else
+                            {
+                                foreach (var record in Model.Records)
+                                { 
+                                    <li>
+                                        <a href="@Url.Action("RecordDetail", new { id = record.RecordId })">
+                                            <span class="glyphicon glyphicon-file"></span>
+                                            <div>
+                                                Record #@record.RecordId<br />
+                                                @foreach (RecordSolutions.Models.FileUrl url in record.FileUrls)
+                                                {
+                                                    <text>@url.Url <br /></text>
+                                                }
+                                            </div>
+                                            <br />
+                                            <em>@record.Comments.Count() comment(s)</em>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>      
+</fieldset>
+
+<br />
+
+<div class="btn-group pull-right">
+    <a href="@Url.Action("UserAdmin")" class="btn btn-default">
+        <span class="glyphicon glyphicon-backward"></span> 
+        Back to User Admin
+    </a>
+    <a href="@Url.Action("UserEdit", new { id = Model.UserId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-pencil"></span>
+        Edit
+    </a>
+    <a href="@Url.Action("UserDelete", new { id = Model.UserId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-remove"></span>
+        Delete
+    </a>
+</div>

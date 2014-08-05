@@ -1,0 +1,174 @@
+﻿@model RecordSolutions.Models.Record
+
+@{
+    ViewBag.Title = "RecordDetail";
+}
+
+<h2>Record Detail</h2>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Click handler's to show/hide the Add Comment form
+            $('a.addCmt').click(function (e) {
+                e.preventDefault();
+                $('a.addCmt').fadeOut("fast");
+                $('div#hiddenTextArea').animate(
+                    { height: "toggle", opacity: "toggle" }, "slow");
+                $("html, body").animate(
+                    { scrollTop: $("div#hiddenTextArea").offset().top }, 1000);
+            });
+            $('a.cancelCmt').click(function (e) {
+                e.preventDefault();
+                $('a.addCmt').fadeIn("fast");
+                $('div#hiddenTextArea').animate(
+                    { height: "toggle", opacity: "toggle" }, "slow");
+            });
+        });
+    </script>
+}
+
+<fieldset class="fsDetail">
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <legend>
+                        <a href="@Url.Action("Records")" class="btn btn-default pull-right">
+                            <span class='glyphicon glyphicon-backward'></span> Back to Records
+                        </a>
+                        <span class="glyphicon glyphicon-file" style="font-size: 56px;color: #1E619B;"></span> 
+                        Record #@Model.RecordId
+                    </legend>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td width="25%">
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.FileUrls):
+                    </div>
+                </td>
+                <td width="75%">
+                    <div class="display-field">
+                        @foreach(RecordSolutions.Models.FileUrl url in Model.FileUrls)
+                        {
+                            <text><a href="@Url.Action("RecordDownload", new { id = Model.RecordId, url = url.Url })">
+                                    @url.Url</a> <br /></text>
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.StartDate):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Model.StartDate.ToShortDateString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.EndDate):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Model.EndDate.ToShortDateString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ReferenceNumber):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ReferenceNumber)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Comments):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @if (Model.Comments.Count > 0)
+                        {
+                            <a class="btn btn-success addCmt" style="margin-bottom: 15px;">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Add a Comment
+                            </a>
+                            foreach (var cmt in Model.Comments)
+                            { 
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span> @cmt.Title</h3>
+                                    </div>
+                                    @if (cmt.Body.Length > 1)
+                                    {
+                                        <div class="panel-body">@Html.Raw(cmt.Body)</div>
+                                    }
+                                    <div class="panel-footer">
+                                        <p>
+                                            <small>@cmt.Date.ToShortDateString() @cmt.Date.ToShortTimeString()</small><br />
+                                            <a href="mailto:@{@cmt.User.Email}"><em>@cmt.User.UserName</em></a>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                            <a class="btn btn-success addCmt">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Add a Comment
+                            </a>
+                        }
+                        else
+                        { 
+                            <em>This file has no comments.</em><br />
+                            <a class="btn btn-success addCmt">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Add the First Comment!
+                            </a>
+                        }
+                        <div id="hiddenTextArea" style="display: none;">
+                            @using (Html.BeginForm()) {
+                                @Html.AntiForgeryToken()
+                                <h3>Add Your Comment:</h3>
+                                <input name="title" id="title" class="form-control" 
+                                    style="margin-bottom: 15px;" placeholder="Title..." />
+                                <textarea name="cmt" id="cmt" class="form-control" rows="4"
+                                    placeholder="Body..."></textarea>
+                                <div class="btn-group pull-right" style="margin-top: 15px;">
+                                    <button type="submit" class="btn btn-success">
+                                        <span class="glyphicon glyphicon-ok-sign"></span>
+                                        Add Comment
+                                    </button>
+                                    <a class="btn btn-danger cancelCmt">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        Cancel
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</fieldset>
+<p>
+    <a href="@Url.Action("Records")" class="btn btn-default pull-right">
+        <span class='glyphicon glyphicon-backward'></span> Back to Records
+    </a>
+</p>

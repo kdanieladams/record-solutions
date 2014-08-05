@@ -1,0 +1,230 @@
+// --------
+// Includes
+// --------
+@import "bootstrap.less";
+@font-face
+{
+    font-family: "Open Sans Light";
+    src: url('http://fonts.googleapis.com/css?family=Open+Sans:300');
+}
+// ---------
+// Variables
+// ---------
+@bodybg:        #fff;
+@bodyfont:      #000;
+@deepBlue:      #235cc6;
+@deepBlueDark:  #18386f;
+@lightBlue:     #7c9edc;
+
+// ------------------------
+// General Classes & Styles
+// ------------------------
+BODY {
+  background-color: @bodybg;
+  color: @bodyfont;
+  padding-bottom: 75px;
+}
+BODY, H1, H2, H3, H4, H5, H6 {
+  font-family: "Open Sans Light";
+}
+INPUT[type="text"],
+INPUT[type="email"],
+INPUT[type="password"] {
+  .form-control;
+}
+
+// --------------
+// Helper classes
+// --------------
+.centerTxt {
+  text-align: center;
+}
+.border {
+  border: solid 1px #ccc; 
+  border-radius: 7px;
+}
+
+// ------------------------
+// Bootstrap customizations
+// ------------------------
+legend {
+  border: 0px;
+}
+.panel {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.panel-footer{
+  background-color: transparent;
+}
+.open {
+  // Reverse the caret
+  .caret {
+    border-top: 0;
+    border-bottom: @caret-width-base solid;
+    content: "";
+  }
+}
+.detailTbl {
+  thead, tbody {
+    tr {
+      th, td {
+        text-align: center;
+      }
+      th:nth-child(5), td:nth-child(5){
+        text-align: left;
+      }
+    }
+  }
+}
+
+// -------------------------------
+// Specific Styles by @media Query
+// -------------------------------
+/* Small devices (tablets, 768px and up) */
+@media (min-width: @screen-sm-min) { 
+  .navbar-nav > li > form > a {
+    display: inline-block;
+    padding: 15px;
+    line-height: 20px;
+  }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: @screen-md-min) { }
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: @screen-lg-min) {  }
+
+// ------
+// Navbar
+// ------
+div.navbar {
+  box-shadow: 0px 8px 8px rgba(0,0,0,0.6);
+  .container {
+    div.navLogo {
+      display: inline-block;
+      float: left;
+      width: 45px;
+      height: 45px;
+      margin-top: 3px;
+      border-radius: 10px;
+      background-color: @deepBlue;
+      background-image: url('/Images/rs.png');
+      background-size: 25px 45px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    ul.navbar-nav {
+      li > form > div.dropdown {
+        width: 300px;
+        display: block;
+        margin-top: 3px;
+        text-align: right;
+        ul.dropdown-menu {
+          li > a {
+            font-size: 14px;
+          }
+        }
+        a { 
+          img {
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            margin-left: 3px;
+            border: solid 4px #5391EB;
+            vertical-align: middle;
+            color: @bodybg;
+          }
+        }
+        a:hover {
+          text-decoration: none;
+        }
+        a:hover > img {
+          border-color: @brand-primary;
+        }
+      }
+      li > a, 
+      li > form > a {
+        font-size: 18px;
+        color: @deepBlue;
+      }
+      li > a:hover,
+      li > form > a:hover {
+        text-decoration: none;
+        color: @deepBlueDark;
+      }
+      li > a.active {
+        background-color: #ededed;
+        color: #999;
+      }
+      li.separator {
+        margin-top: 10px;
+        background-color: #ddd;
+        width: 1px;
+        height: 30px;
+      }
+    }
+  }
+}
+
+// ------
+// Footer
+// ------
+.footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  z-index: 1000;
+  margin-top: 25px;
+  padding: 15px 0px;
+  box-shadow: 0px 8px 8px rgba(0,0,0,0.6) inset;
+  background-color: #222;
+  border-top: solid 1px #ccc;
+  color: #999;
+  text-align: center;
+}
+
+// ------------
+// Landing Page
+// ------------
+div.headerLogo {
+  position: relative;
+  background-color: #235cc6;
+  color: #fff;
+  div.logo {
+    font: 120px "Stint Ultra Condensed";
+    text-align: center;
+    padding-top: 110px;
+    div.slogan {
+      width: 767px;
+      margin: 0px auto;
+      padding-right: 313px;
+      font: 33px "Open Sans Light";
+      text-align: center;
+    }
+  }
+  div.headerLogoBtmBorder {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 10px;
+    background-color: #18386f;
+  }
+}
+div.pageContainer{
+  margin-top: 70px;
+}
+div.third {
+  text-align: center;
+  font-size: 20px;
+}
+div.third:parent {
+  margin-bottom: 25px;
+}
+p.imgTxt {
+  background-color: #7c9edc;
+  color: #fff;
+  text-align: center;
+  font-size: 24px;
+  margin-top: 10%;
+}

@@ -1,0 +1,173 @@
+@model RecordSolutions.ViewModels.MgmtIndexViewModel
+<!doctype html>
+<html>
+<head>
+  <title>@ViewBag.Title</title>
+  <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width" />
+
+  @Styles.Render("~/Content/stylesMgmt.css")
+
+  @Scripts.Render("~/bundles/modernizr")
+  @Scripts.Render("~/Scripts/jquery-1.10.2.min.js")
+  @Scripts.Render("~/Scripts/bootstrap.min.js")
+  @Scripts.Render("~/Scripts/jquery.flot.js")
+  @Scripts.Render("~/Scripts/jquery.flot.time.js")
+  @Scripts.Render("~/Scripts/dancal.js")
+  @Scripts.Render("~/Scripts/dangreet.js")
+  @Scripts.Render("~/Scripts/danajax.js")
+  
+    <script>
+        // Global variables
+        var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+
+        // Setup the parameters for AJAX handling
+        ajaxStuff.body = "#ajaxBody";             // Element where ajax content loads
+        ajaxStuff.loadCont = "#loadingContainer"; // Element to show during loading operation
+
+        $(document).ready(function(){
+            var height = document.documentElement.clientHeight;   // Height of client viewport
+            var greetings = [];                                   // Array to hold notifications
+
+            // Set content wrapper height to height of viewport
+            document.getElementById('wrapper').style.height = height + "px";
+        
+            // Add greetings from controller to dangreet.js greetings array
+            @for (int i = 0; i < Model.Notices.Count; i++)
+            {
+                <text>greetings.push(["@Model.Notices[i].Message", @Model.Notices[i].Category.CategoryId]);</text>
+            }
+
+            // Initialize the greeting & notifications                
+            danGreetStuff = {
+                greeting: "#greeting",      // Search string for element where greeting goes
+                greetings: greetings,       // Array of greetings to display
+                user: "@Model.UserName",    // Current user's UserName
+
+                // Colors to represent message status
+                colorStandard: "@ViewBag.CatColors[0]",
+                colorSuccess: "@ViewBag.CatColors[1]",
+                colorWarning: "@ViewBag.CatColors[2]",
+                colorDanger: "@ViewBag.CatColors[3]"
+            }
+
+            danGreetInit();
+
+            // Setup onclick handlers for dropDown menus in navbar
+            $("#sidebar-nav > li > span.menuToggle[data-target]").click(
+            function () {
+                if ($(this).hasClass('glyphicon-chevron-down')) {
+                    $(this).removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+                    target = $(this).data('target');
+                    $(target).collapse('show');
+                }
+                else {
+                    $(this).removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+                    target = $(this).data('target');
+                    $(target).collapse('hide');
+                }
+            }
+            );
+        });
+
+        // Some things work better from window.onload()
+        window.onload = function () {
+            // Select the currently active nav link (dashboard)
+            $('ul#sidebar-nav > li').each(function () {
+                if ($(this).attr("data-action") == action)
+                    $(this).addClass('active');
+            });
+            // Hide the ajax loading screen
+            $("#loadingContainer").hide();
+            $("#ajaxBody").show();
+            // Setup ajax loading onclick handler for nav links
+            $('ul#sidebar-nav > li > a').each(clickAjaxOverride);
+            $('ul#sidebar-nav > li > ul.collapse > li > a').each(clickAjaxOverride);
+
+            if (finishedLoading != null)
+                finishedLoading();
+        };
+    </script>
+</head>
+<body>
+  <div class="container" id="wrapper">
+    <div class="col-md-2" id="nav">
+      <a href="@Url.Action("Index", "Home")"><img src="/Images/logo.png" border="0"/></a><br />
+        <div class="well sidebar-nav">  
+        <ul class="nav nav-list" id="sidebar-nav">
+            <li data-action="Index">
+              <a href="@Url.Action("Dashboard", "Mgmt")">
+                <span class="glyphicon glyphicon-dashboard"></span>
+                Dashboard
+              </a>
+            </li>
+            <li data-action="Messages">
+              <a href="@Url.Action("Messages", "Mgmt")">
+                <span class="glyphicon glyphicon-envelope"></span>
+                Messages
+              </a>
+            </li>
+            <li data-action="Records">
+              <a href="@Url.Action("Records", "Mgmt")">
+                <span class="glyphicon glyphicon-edit"></span>
+                Record Admin
+              </a>
+            </li>
+            <li data-action="Users">
+              <a href="@Url.Action("UserAdmin", "Mgmt")">
+                <span class="glyphicon glyphicon-user"></span>
+                User Admin
+              </a>
+            </li>
+            <li data-action="Settings">
+              <a href="@Url.Action("Settings", "Mgmt")">
+                <span class="glyphicon glyphicon-cog"></span>
+                Settings
+              </a>
+            </li>
+        </ul>  
+    </div> 
+    </div>
+    <div class="container col-md-10" id="cont">
+      <div class="row">
+        <div class="col-md-12">
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+        {  
+          @Html.AntiForgeryToken()
+          <div id="userMini" class="dropdown">
+            <a href="" data-toggle="dropdown" data-target="#">
+              <span class="caret"></span>
+              Account Settings<img src="@Model.UserAvatarUrl" />
+            </a>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="@Url.Action("Index", "Home")">Home
+                    <span class="glyphicon glyphicon-home"></span></a></li>
+                <li><a href="@Url.Action("Manage", "Account")">Manage Account
+                    <span class="glyphicon glyphicon-user"></span></a></li>
+                <li><a href="@Url.Action("Records", "Account")">Avail. Records
+                        <span class="glyphicon glyphicon-list"></span></a></li>
+                <li>  
+                    <a href="javascript:document.getElementById('logoutForm').submit()">Log off
+                        <span class="glyphicon glyphicon-ban-circle"></span></a>
+                </li>
+            </ul>
+          </div>
+        }
+          <h3 id="greeting"><br/><small id="greetSmall"></small></h3>
+        </div>
+      </div>
+      <div class="row" style="position:relative;">
+        <div id="loadingContainer">Loading...</div>
+        <div class="col-md-12" id="ajaxBody">
+            @RenderBody()
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center" style="padding-top: 100px; padding-bottom: 25px;">
+          &copy; 2014 Copyright Daniel Adams Inc.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

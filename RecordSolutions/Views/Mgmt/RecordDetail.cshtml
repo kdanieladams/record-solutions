@@ -1,0 +1,155 @@
+﻿@model RecordSolutions.Models.Record
+
+@{
+    Layout = null;
+}
+<script>
+    var action = '@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString()';
+    $("th a").each(clickAjaxOverride);
+    $("td a").each(clickAjaxOverride);
+    $("a.btn").each(clickAjaxOverride);
+    $("#sidebar-nav > li").removeClass("active");
+    $("#sidebar-nav > li[data-action='Records']").addClass('active');
+</script>
+
+<fieldset class="fsDetail">
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <legend>
+                        <div class="btn-group pull-right">
+                            <a href="@Url.Action("Records")" class="btn btn-default">
+                                <span class="glyphicon glyphicon-backward"></span> 
+                                Back to Record Admin
+                            </a>
+                            <a href="@Url.Action("RecordEdit", new { id = Model.RecordId })" class="btn btn-default">
+                                <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                                Edit
+                            </a>
+                            <a href="@Url.Action("RecordDelete", new { id = Model.RecordId })" class="btn btn-default">
+                                <span class="glyphicon glyphicon glyphicon-remove"></span>
+                                Delete
+                            </a>
+                        </div>
+                        <span class="glyphicon glyphicon-file" style="font-size: 56px;color: #1E619B;"></span> Record #@Model.RecordId
+                    </legend>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.FileUrls):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @foreach(RecordSolutions.Models.FileUrl url in Model.FileUrls)
+                        {
+                            <text>@url.Url <br /></text>
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.StartDate):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Model.StartDate.ToShortDateString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.EndDate):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Model.EndDate.ToShortDateString()
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.ReferenceNumber):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @Html.DisplayFor(model => model.ReferenceNumber)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.PermittedUsers):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @foreach (var user in Model.PermittedUsers)
+                        { 
+                            <a href="@Url.Action("UserDetail", new { id = user.UserId })">@user.UserName</a> <br />
+                        }
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="display-label">
+                        @Html.DisplayNameFor(model => model.Comments):
+                    </div>
+                </td>
+                <td>
+                    <div class="display-field">
+                        @foreach (var cmt in Model.Comments)
+                        { 
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span> @cmt.Title</h3>
+                                </div>
+                                @if (cmt.Body.Length > 1)
+                                {
+                                    <div class="panel-body">@Html.Raw(cmt.Body)</div>
+                                }
+                                <div class="panel-footer">
+                                    <p>
+                                        <small>@cmt.Date.ToShortDateString() @cmt.Date.ToShortTimeString()</small><br />
+                                        <a href="@Url.Action("UserDetail", new { id = cmt.User.UserId })"><em>@cmt.User.UserName</em></a> 
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</fieldset>
+
+<br />
+
+<div class="btn-group pull-right">
+    <a href="@Url.Action("Records")" class="btn btn-default">
+        <span class="glyphicon glyphicon-backward"></span> 
+        Back to Record Admin
+    </a>
+    <a href="@Url.Action("RecordEdit", new { id = Model.RecordId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-pencil"></span>
+        Edit
+    </a>
+    <a href="@Url.Action("RecordDelete", new { id = Model.RecordId })" class="btn btn-default">
+        <span class="glyphicon glyphicon glyphicon-remove"></span>
+        Delete
+    </a>
+</div>

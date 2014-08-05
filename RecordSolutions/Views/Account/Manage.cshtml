@@ -1,0 +1,163 @@
+﻿@model RecordSolutions.Models.ManageModel
+@{
+    ViewBag.Title = "Manage Account";
+}
+<style>
+    fieldset {
+        margin-bottom: 25px;
+        border: solid 1px black;
+        padding: 10px;
+    }
+    fieldset legend {
+        display: block;
+        font-size: 18px;
+        margin-bottom: 15px;
+        border: solid 1px #aaa;
+        padding: 4px;
+    }
+    fieldset legend:after {
+        content: ":"
+    }
+    fieldset label.mainLbl {
+        font-weight: bold;
+    }
+    fieldset label.subLbl{
+        float: left;
+        margin-right: 10px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <h1>@ViewBag.Title.</h1>
+        
+        @if (ViewBag.StatusMessage != "Unable to update your profile")
+        {
+            <p class="message-success">@ViewBag.StatusMessage</p>
+        }
+        else
+        {
+            <p class="message-success"><span style="color:#c00;">@ViewBag.StatusMessage</span></p>
+        }
+
+        <p>You're logged in as <strong>@User.Identity.Name</strong>.</p>
+
+        @if (ViewBag.HasLocalPassword)
+        {
+            using (Html.BeginForm("Manage", "Account", FormMethod.Post, new { enctype = "multipart/form-data" })) 
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+
+                <fieldset>
+                    <legend>Update Profile</legend>
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, new { @class = "mainLbl" })
+                                @Html.EditorFor(m => m.Email, new { value = Model.Email })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.AvatarUrl, new { @class = "mainLbl" })
+                                <br />
+                                <div><b><em>You may either:</em></b></div>
+                                <label for="uploadAv" class="subLbl">
+                                    Choose an image to upload <small><em>(200px by 200px, any common image format)</em></small>:
+                                </label>
+                                <input type="file" name="uploadAv" id="uploadAv" class="form-control"   
+                                    accept="image/gif, image/jpeg, image/png" style="margin-top: 25px;" />
+                                <br />
+                                <div><b><em>OR:</em></b></div>
+                                <label for="Gravatar" class="subLbl">
+                                    Use a <a href="http://www.gravatar.com" target="_blank"><em>Gravatar</em></a> 
+                                    derived from your email address:
+                                </label>
+                                @if(Model.AvatarUrl.Contains("gravatar.com"))
+                                {
+                                    @Html.CheckBox("Gravatar", true, new { id = "Gravatar" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBox("Gravatar", false, new { id = "Gravatar" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <img src="@Model.AvatarUrl" class="img-responsive img-circle" />
+                        </div>
+                    </div>
+                    <input type="submit" value="Update Profile" class="btn btn-default" />
+                </fieldset>
+            }
+    
+            using (Html.BeginForm("ChangePassword", "Account"))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+                <fieldset>
+                    <legend>Change Password</legend>
+                    <ol>
+                        <li>
+                            <div class="form-group">
+                                <label for="OldPassword">Current Password</label>
+                                <input type="password" value ="@String.Empty" name="OldPassword" id="OldPassword" />
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-group">
+                                <label for="NewPassword">New Password</label>
+                                <input type="password" value ="@String.Empty" name="NewPassword" id="NewPassword" />
+                            </div>
+                        </li>
+                        <li>
+                            <div class="form-group">
+                                <label for="ConfirmPassword">Confirm Password</label>
+                                <input type="password" value ="@String.Empty" name="ConfirmPassword" id="ConfirmPassword" />
+                            </div>
+                        </li>
+                    </ol>
+                    <input type="submit" value="Change Password" class="btn btn-default" />
+                </fieldset>
+            }
+        }
+        else
+        { 
+            @Html.Partial("_SetPasswordPartial")
+        }
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            // Selection string to find the checkbox we want to track
+            var elm = "#Gravatar";
+
+            // checkCheckBox()
+            // --
+            // Function to check whether or not the Gravatar checkbox
+            // is checked, and make appropriate changes to this page
+            var checkCheckBox = function () {
+                if ($(elm).prop("checked")) {
+                    $("#uploadAv").prop("disabled", true);
+                    $("label[for=uploadAv]").css("color", "#999");
+                }
+                else {
+                    $("#uploadAv").prop("disabled", false);
+                    $("label[for=uploadAv]").css("color", "#000");
+                };
+            };
+            
+            // Initial check in case default value is true
+            checkCheckBox();
+
+            // Setup onChange event handler for checkbox
+            $(elm).change(function () {
+                checkCheckBox();
+            });
+        });
+    </script>
+}
