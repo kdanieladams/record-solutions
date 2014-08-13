@@ -138,28 +138,28 @@
 </script>
 <div class="row" id="tripheader">
     <div class="col-sm-3">
-        <p class="icon icon-person"><span class="glyphicon glyphicon-user"></span></p>
-        <h2>        
+        <div class="tripcontainer">
+            <div class="icon icon-person"><span class="glyphicon glyphicon-user"></span></div>
             @Model.NumUsers<br><small>New Users</small>
-        </h2>
+        </div>
     </div>
     <div class="col-sm-3">
-        <h2>
-        <div class="icon icon-mail"><span class="glyphicon glyphicon-envelope"></span></div>
-        @Model.NumMessages<br><small>New Messages</small>
-        </h2>
+        <div class="tripcontainer">
+            <div class="icon icon-mail"><span class="glyphicon glyphicon-envelope"></span></div>
+            @Model.NumMessages<br><small>New Messages</small>
+        </div>
     </div>
     <div class="col-sm-3">
-        <h2>
-        <div class="icon icon-files"><span class="glyphicon glyphicon-file"></span></div>
-        @Model.NumRecords<br><small>Accessible Records</small>
-        </h2>
+        <div class="tripcontainer">
+            <div class="icon icon-files"><span class="glyphicon glyphicon-file"></span></div>
+            @Model.NumRecords<br><small>Accessible Records</small>
+        </div>
     </div>
     <div class="col-sm-3">
-        <h2>
-        <div class="icon icon-online"><span class="glyphicon glyphicon-globe"></span></div>
-        @Model.NumUsersOnline<br><small>Users Online</small>
-        </h2>
+        <div class="tripcontainer">
+            <div class="icon icon-online"><span class="glyphicon glyphicon-globe"></span></div>
+            @Model.NumUsersOnline<br><small>Users Online</small>
+        </div>
     </div>
 </div>
 <div class="row">
