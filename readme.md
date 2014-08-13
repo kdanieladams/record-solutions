@@ -6,7 +6,7 @@ Record Solutions
 * MVC 4
 
 ## Installation ##
-1. Clone project to your local HDD 'git clone https://github.com/eod696/Record-Solutions.git Record-Solutions'
+1. Clone project to your local HDD `git clone https://github.com/eod696/Record-Solutions.git Record-Solutions`
 2. Run the solution file `RecordSolutions.sln`
 3. Install missing packages with NuGet Package Manager [NuGet Docs - Restore Packages](http://docs.nuget.org/docs/reference/package-restore) *IMPORTANT* Visual Studio needs to be Run as Administrator in order for NuGet Package Manager to do it's thing.
 4. Build the solution and run it in Debug mode.  This should automagically generate a local development database file in `.mdf` format.  It will appear in the Server Explorer as `RSEntitiesConnection`.  After the first successful build, the solution is operational, and you should be able to browse it as a visitor with an internet browser of your choice.
@@ -16,6 +16,7 @@ Record Solutions
 8. Create a role called "Administrator" in the `webpages_Roles` table.  The role ID is an auto-increment field, so just put the name of the role (`Administrator`) in place and press Enter to let the ID be automated.
 9. Perform the same steps to show table data for the `UserProfile` table.  Find your username, and make note of the ID.
 10. Assign your user id to the `Administrators` role id by showing table data for `webpages_UsersInRoles`.  
+
 At this point, you should be able to login to the site and access the MGMT administration interface via the drop-down menu which appears when you click on your avatar in the upper right corner of the layout.
 It's a bit cumbersome, I know, but this is partly because I wanted to keep a strangle-hold on how a user might become an administrator, partly because I used automagic methods to add authentication to the project.
 
