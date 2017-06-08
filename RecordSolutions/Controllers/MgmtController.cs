@@ -50,8 +50,8 @@ namespace RecordSolutions.Controllers
         private MgmtIndexViewModel InitMgmtIndexViewModel()
         {
             // Get a few messages from last 30 days
-            DateTime thirtyDays = DateTime.Today.AddDays(-31);
-            DateTime ninetyDays = DateTime.Today.AddDays(-90);
+            DateTime thirtyDays = DateTime.Today.AddDays(-331);
+            DateTime ninetyDays = DateTime.Today.AddDays(-390);
             IQueryable<Message> qry1 = (from message in modelDb.Messages
                                             where message.Date > thirtyDays && message.Category.Name != "Comment"
                                             orderby message.Date descending
