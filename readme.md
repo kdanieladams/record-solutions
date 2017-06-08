@@ -1,5 +1,8 @@
 Record Solutions
 ================
+## DEMONSTRATION PURPOSES ONLY ##
+Please note, this repository has been added here for demonstration purposes only.
+
 ## Prerequisites ##
 * Visual Studio 2013
 * .NET Framework 4.5
